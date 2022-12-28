@@ -8,7 +8,7 @@ import pyttsx3
 import speech_recognition as sr
 
 engine = pyttsx3.init()
-r = sr.Recognizer()
+recognizer = sr.Recognizer()
 print("Press Ctrl-c to stop program")
 
 
@@ -26,10 +26,13 @@ while True:
     try:
         # FIX: Microphone detection issues. ALSA lib unable to open slave.
         with sr.Microphone() as source:
-            audio = r.listen(source)
-            speak(r.recognize_sphinx(audio))
+            recognizer.adjust_for_ambient_noise(source)  # here
+            audio = recognizer.listen(source)
+            text = recognizer.recognize_google(audio)
+            text = text.lower()
+            speak(text)   # Bot response
     except sr.UnknownValueError:
         pass
     except sr.RequestError as e:
-        print("Sphinx error; {0}".format(e))
+        print("Could not request results; {0}".format(e))
         break
